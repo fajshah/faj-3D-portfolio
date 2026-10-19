@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Syeda Farzana Shah — Teacher & AI Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #060612;
+    --bg2: #0d0d22;
+    --grid: rgba(100,100,255,0.06);
+    --accent: #7c6dfa;
+    --accent2: #fa6d9a;
+    --accent3: #6dfacc;
+    --accent4: #fac86d;
+    --text: #e8e8ff;
+    --muted: #8888aa;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+  #cursor {
+    width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s, background 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(124,109,250,0.5); border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.25s cubic-bezier(.17,.67,.35,1.2);
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px; z-index: 0;
+  }
+  .glow-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .glow-orb.one { width: 500px; height: 500px; background: rgba(124,109,250,0.12); top: -100px; left: -100px; }
+  .glow-orb.two { width: 400px; height: 400px; background: rgba(250,109,154,0.08); bottom: 10%; right: -80px; }
+  .glow-orb.three { width: 300px; height: 300px; background: rgba(109,250,204,0.06); top: 50%; left: 40%; }
+
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(6,6,18,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .nav-logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 0.1em; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero { min-height: 100vh; display: flex; align-items: center; padding: 8rem 3rem 4rem; gap: 4rem; flex-wrap: wrap; }
+  .hero-text { flex: 1; min-width: 280px; max-width: 520px; }
+  .hero-tag {
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .hero-tag::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1rem; }
+  h1 span { color: var(--accent); }
+  .hero-roles { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.2rem; }
+  .role-badge {
+    font-family: 'Space Mono', monospace; font-size: 11px; padding: 4px 10px;
+    border-radius: 20px; border: 1px solid; letter-spacing: 0.05em;
+  }
+  .rb-purple { border-color: var(--accent); color: var(--accent); background: rgba(124,109,250,0.08); }
+  .rb-pink   { border-color: var(--accent2); color: var(--accent2); background: rgba(250,109,154,0.08); }
+  .rb-teal   { border-color: var(--accent3); color: var(--accent3); background: rgba(109,250,204,0.08); }
+  .hero-sub { font-size: 1rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; max-width: 440px; }
+  .hero-sub strong { color: var(--accent3); font-weight: 500; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn { padding: 0.75rem 1.8rem; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-decoration: none; text-transform: uppercase; transition: all 0.2s; display: inline-block; }
+  .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+  .btn-primary:hover { background: transparent; color: var(--accent); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.15); }
+  .btn-outline:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ISO SCENE */
+  .hero-iso { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 420px; min-width: 280px; }
+  .iso-stage { perspective: 800px; perspective-origin: 50% 40%; width: 380px; height: 380px; position: relative; }
+  .iso-world {
+    width: 100%; height: 100%; transform-style: preserve-3d;
+    transform: rotateX(40deg) rotateZ(45deg);
+    animation: worldSpin 30s linear infinite; position: relative;
+  }
+  @keyframes worldSpin { to { transform: rotateX(40deg) rotateZ(405deg); } }
+  .platform { position: absolute; transform-style: preserve-3d; }
+  .cube-face { position: absolute; transform-style: preserve-3d; border: 1px solid rgba(255,255,255,0.08); }
+  .proj-cube { position: absolute; transform-style: preserve-3d; cursor: pointer; transition: filter 0.3s; animation: floatCube 4s ease-in-out infinite; }
+  .proj-cube:hover { filter: brightness(1.5); }
+  @keyframes floatCube { 0%,100% { margin-top: 0; } 50% { margin-top: -8px; } }
+  .c-face { position: absolute; }
+  .cube-label { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; font-weight:700; color:rgba(255,255,255,0.9); text-align:center; line-height:1.2; letter-spacing:0.05em; }
+  .cube-icon { font-size: 18px; margin-bottom: 3px; }
+  .proj-cube .tooltip { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%) rotateX(-40deg) rotateZ(-45deg); background:rgba(13,13,34,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:6px 10px; font-size:10px; color:var(--text); white-space:nowrap; pointer-events:none; opacity:0; transition:opacity 0.2s; font-family:'Space Mono',monospace; }
+  .proj-cube:hover .tooltip { opacity: 1; }
+
+  /* SECTION COMMON */
+  .section-tag { font-family:'Space Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.5rem; }
+  .section-header { display:flex; align-items:center; gap:1rem; margin-bottom:3rem; }
+  .section-header h2 { font-size:2rem; font-weight:800; letter-spacing:-0.02em; white-space:nowrap; }
+  .section-header::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, rgba(124,109,250,0.4), transparent); }
+
+  /* STATS BAR */
+  #stats { padding: 3rem; display: flex; gap: 1px; flex-wrap: wrap; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .stat-item { flex: 1; min-width: 140px; padding: 1.5rem 2rem; text-align: center; }
+  .stat-num { font-size: 2.5rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 0.3rem; font-family: 'Space Mono', monospace; letter-spacing: 0.05em; }
+
+  /* SKILLS */
+  #skills { padding: 6rem 3rem; }
+  .skills-tabs { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .tab-btn { font-family:'Space Mono',monospace; font-size:11px; padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; letter-spacing:0.05em; }
+  .tab-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tab-btn:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+  .skills-panel { display: none; }
+  .skills-panel.active { display: block; }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .skill-tile { background:var(--bg2); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:1.2rem 1rem; text-align:center; transition:all 0.25s; position:relative; overflow:hidden; }
+  .skill-tile::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, var(--c, transparent) 0%, transparent 60%); opacity:0; transition:opacity 0.3s; }
+  .skill-tile:hover::before { opacity: 0.15; }
+  .skill-tile:hover { border-color:var(--c, var(--accent)); transform:translateY(-3px); }
+  .skill-icon { font-size:28px; margin-bottom:0.5rem; }
+  .skill-name { font-size:13px; font-weight:500; color:var(--text); }
+  .skill-bar-wrap { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; margin-top:0.7rem; overflow:hidden; }
+  .skill-bar { height:100%; border-radius:2px; background:var(--c, var(--accent)); animation:barGrow 1.5s ease-out forwards; transform-origin:left; transform:scaleX(0); animation-play-state:paused; }
+  @keyframes barGrow { to { transform: scaleX(1); } }
+
+  /* PROJECTS */
+  #projects { padding: 6rem 3rem; }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .proj-card { background:var(--bg2); border:1px solid rgba(255,255,255,0.06); border-radius:8px; overflow:hidden; transition:all 0.3s; }
+  .proj-card:hover { border-color:var(--proj-col, var(--accent)); transform:translateY(-4px); box-shadow:0 20px 60px -20px var(--proj-col, var(--accent)); }
+  .proj-card-top { height:90px; display:flex; align-items:center; justify-content:center; font-size:38px; position:relative; overflow:hidden; background:var(--proj-bg, #131330); }
+  .proj-card-top::after { content:''; position:absolute; inset:0; background:linear-gradient(0deg, var(--bg2) 0%, transparent 60%); }
+  .proj-card-body { padding:1rem 1.25rem 1.25rem; }
+  .proj-card-title { font-size:15px; font-weight:700; margin-bottom:4px; color:var(--proj-col, var(--text)); }
+  .proj-card-desc { font-size:13px; color:var(--muted); line-height:1.5; }
+  .proj-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:0.6rem; }
+  .proj-tag { display:inline-block; font-family:'Space Mono',monospace; font-size:10px; padding:3px 8px; border-radius:3px; background:rgba(255,255,255,0.05); color:var(--muted); letter-spacing:0.05em; }
+
+  /* EXPERIENCE */
+  #experience { padding: 6rem 3rem; }
+  .timeline { position:relative; padding-left:2rem; }
+  .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(180deg, var(--accent), transparent); }
+  .timeline-item { position:relative; margin-bottom:3rem; padding-left:1.5rem; }
+  .timeline-item::before { content:''; position:absolute; left:-2rem; top:6px; width:10px; height:10px; border-radius:50%; background:var(--dot-c, var(--accent)); box-shadow:0 0 12px var(--dot-c, var(--accent)); }
+  .tl-date { font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:0.1em; margin-bottom:0.4rem; }
+  .tl-title { font-size:18px; font-weight:700; margin-bottom:0.25rem; }
+  .tl-place { font-size:13px; color:var(--accent3); margin-bottom:0.5rem; }
+  .tl-desc { font-size:14px; color:var(--muted); line-height:1.6; max-width:580px; }
+  .tl-bullets { list-style:none; margin-top:0.6rem; display:flex; flex-direction:column; gap:0.3rem; }
+  .tl-bullets li { font-size:13px; color:var(--muted); line-height:1.5; padding-left:1rem; position:relative; }
+  .tl-bullets li::before { content:'▸'; position:absolute; left:0; color:var(--accent); font-size:10px; top:3px; }
+
+  /* LANGUAGES */
+  .lang-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:1rem; }
+  .lang-badge { padding:8px 20px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); font-size:14px; font-weight:500; background:var(--bg2); }
+
+  /* STRENGTHS */
+  #strengths { padding: 5rem 3rem; }
+  .strengths-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; margin-top:2rem; }
+  .strength-card { background:var(--bg2); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:1.5rem; transition:all 0.25s; }
+  .strength-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .strength-icon { font-size:28px; margin-bottom:0.8rem; }
+  .strength-title { font-size:14px; font-weight:700; margin-bottom:0.4rem; }
+  .strength-desc { font-size:13px; color:var(--muted); line-height:1.5; }
+
+  /* CONTACT */
+  #contact { padding:6rem 3rem; display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  .contact-text h2 { font-size:2.8rem; font-weight:800; line-height:1.1; margin-bottom:1rem; }
+  .contact-text p { color:var(--muted); line-height:1.7; max-width:380px; }
+  .contact-links { display:flex; flex-direction:column; gap:1rem; margin-top:1rem; }
+  .contact-link { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; background:var(--bg2); border:1px solid rgba(255,255,255,0.06); border-radius:6px; text-decoration:none; transition:all 0.2s; }
+  .contact-link:hover { border-color:var(--accent); transform:translateX(4px); }
+  .cl-icon { width:36px; height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .cl-label { font-size:11px; color:var(--muted); font-family:'Space Mono',monospace; letter-spacing:0.05em; }
+  .cl-value { font-size:14px; color:var(--text); font-weight:500; }
+
+  footer { text-align:center; padding:2rem 3rem; border-top:1px solid rgba(255,255,255,0.05); font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); position:relative; z-index:1; }
+  body::after { content:''; position:fixed; inset:0; z-index:9990; pointer-events:none; background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); }
+
+  @media (max-width:768px) {
+    #hero { flex-direction:column; padding:7rem 1.5rem 3rem; }
+    .hero-iso { min-height:280px; }
+    .iso-stage { width:260px; height:260px; }
+    #contact { grid-template-columns:1fr; }
+    nav { padding:1rem 1.5rem; }
+    .nav-links { display:none; }
+    #skills, #projects, #experience, #strengths { padding:4rem 1.5rem; }
+    #stats { padding:2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="glow-orb one"></div>
+<div class="glow-orb two"></div>
+<div class="glow-orb three"></div>
+
+<nav>
+  <div class="nav-logo">FAJ.DEV</div>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#strengths">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-text">
+    <div class="hero-tag">Open to opportunities · Karachi, Pakistan</div>
+    <h1>Syeda<br/><span>Farzana</span><br/>Shah</h1>
+    <div class="hero-roles">
+      <span class="role-badge rb-purple">AI Developer</span>
+      <span class="role-badge rb-pink">Teacher · 10 yrs</span>
+      <span class="role-badge rb-teal">Full Stack</span>
+    </div>
+    <p class="hero-sub">
+      Secondary school teacher turned <strong>AI developer</strong>. A decade of teaching English &amp; Mathematics now meets <strong>Python, AI agents, TypeScript &amp; Node.js</strong> — where education meets technology.
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-outline">Contact Me</a>
+    </div>
+  </div>
+
+  <div class="hero-iso">
+    <div class="iso-stage">
+      <div class="iso-world">
+        <!-- Platform base -->
+        <div class="platform" style="top:80px;left:80px;">
+          <div class="cube-face" style="background:#131330;width:220px;height:220px;position:absolute;transform:translateZ(0);top:0;left:0;border:1px solid rgba(255,255,255,0.05);"></div>
+          <div class="cube-face" style="background:#0a0a1e;width:220px;height:40px;position:absolute;transform:rotateX(-90deg) translateZ(-40px);top:0;left:0;"></div>
+          <div class="cube-face" style="background:#0c0c24;width:40px;height:220px;position:absolute;transform:rotateY(90deg) translateZ(220px);top:0;left:0;"></div>
+        </div>
+        <!-- Cube A — AI -->
+        <div class="proj-cube" style="top:60px;left:90px;animation-delay:0s;">
+          <div class="tooltip">AI Development</div>
+          <div class="c-face" style="background:#6d5acd;width:70px;height:70px;position:absolute;transform:translateZ(0);top:0;left:0;">
+            <div class="cube-label"><div class="cube-icon">🤖</div>AI</div>
+          </div>
+          <div class="c-face" style="background:#4a3aaa;width:70px;height:30px;position:absolute;transform:rotateX(-90deg) translateZ(-30px);top:0;left:0;"></div>
+          <div class="c-face" style="background:#3a2a8a;width:30px;height:70px;position:absolute;transform:rotateY(90deg) translateZ(70px);top:0;left:0;"></div>
+        </div>
+        <!-- Cube B — Teaching -->
+        <div class="proj-cube" style="top:50px;left:185px;animation-delay:-1s;">
+          <div class="tooltip">10 Years Teaching</div>
+          <div class="c-face" style="background:#cd5a8a;width:55px;height:55px;position:absolute;transform:translateZ(0);top:0;left:0;">
+            <div class="cube-label"><div class="cube-icon">📚</div>EDU</div>
+          </div>
+          <div class="c-face" style="background:#aa3a66;width:55px;height:25px;position:absolute;transform:rotateX(-90deg) translateZ(-25px);top:0;left:0;"></div>
+          <div class="c-face" style="background:#8a2a4e;width:25px;height:55px;position:absolute;transform:rotateY(90deg) translateZ(55px);top:0;left:0;"></div>
+        </div>
+        <!-- Cube C — Backend -->
+        <div class="proj-cube" style="top:150px;left:80px;animation-delay:-2s;">
+          <div class="tooltip">Node.js / Python</div>
+          <div class="c-face" style="background:#3acdaa;width:60px;height:60px;position:absolute;transform:translateZ(0);top:0;left:0;">
+            <div class="cube-label"><div class="cube-icon">⚙️</div>API</div>
+          </div>
+          <div class="c-face" style="background:#2aaa88;width:60px;height:28px;position:absolute;transform:rotateX(-90deg) translateZ(-28px);top:0;left:0;"></div>
+          <div class="c-face" style="background:#1a8a6a;width:28px;height:60px;position:absolute;transform:rotateY(90deg) translateZ(60px);top:0;left:0;"></div>
+        </div>
+        <!-- Cube D — Python -->
+        <div class="proj-cube" style="top:158px;left:192px;animation-delay:-1.5s;">
+          <div class="tooltip">Python & Data</div>
+          <div class="c-face" style="background:#cdaa3a;width:50px;height:50px;position:absolute;transform:translateZ(0);top:0;left:0;">
+            <div class="cube-label"><div class="cube-icon">🐍</div>PY</div>
+          </div>
+          <div class="c-face" style="background:#aa883a;width:50px;height:22px;position:absolute;transform:rotateX(-90deg) translateZ(-22px);top:0;left:0;"></div>
+          <div class="c-face" style="background:#8a682a;width:22px;height:50px;position:absolute;transform:rotateY(90deg) translateZ(50px);top:0;left:0;"></div>
+        </div>
+        <!-- Cube E — TypeScript -->
+        <div class="proj-cube" style="top:110px;left:148px;animation-delay:-0.7s;">
+          <div class="tooltip">TypeScript & JS</div>
+          <div class="c-face" style="background:#cd6a3a;width:45px;height:45px;position:absolute;transform:translateZ(0);top:0;left:0;">
+            <div class="cube-label"><div class="cube-icon">📘</div>TS</div>
+          </div>
+          <div class="c-face" style="background:#aa4a2a;width:45px;height:20px;position:absolute;transform:rotateX(-90deg) translateZ(-20px);top:0;left:0;"></div>
+          <div class="c-face" style="background:#8a3a1a;width:20px;height:45px;position:absolute;transform:rotateY(90deg) translateZ(45px);top:0;left:0;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stat-item"><div class="stat-num">10+</div><div class="stat-label">Years Teaching</div></div>
+  <div class="stat-item"><div class="stat-num">100+</div><div class="stat-label">GitHub Repos</div></div>
+  <div class="stat-item"><div class="stat-num">4+</div><div class="stat-label">Schools Worked</div></div>
+  <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Languages Spoken</div></div>
+  <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Curiosity</div></div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-tag">Toolbelt</div>
+  <div class="section-header"><h2>Skills & Expertise</h2></div>
+
+  <div class="skills-tabs">
+    <button class="tab-btn active" onclick="showTab('tech')">Tech Skills</button>
+    <button class="tab-btn" onclick="showTab('teaching')">Teaching Skills</button>
+  </div>
+
+  <div id="tab-tech" class="skills-panel active">
+    <div class="skills-grid">
+      <div class="skill-tile" style="--c:#e34c26"><div class="skill-icon">🌐</div><div class="skill-name">HTML5</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:92%;animation-delay:0.1s"></div></div></div>
+      <div class="skill-tile" style="--c:#264de4"><div class="skill-icon">🎨</div><div class="skill-name">CSS3</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:88%;animation-delay:0.2s"></div></div></div>
+      <div class="skill-tile" style="--c:#f7df1e"><div class="skill-icon">⚡</div><div class="skill-name">JavaScript</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%;animation-delay:0.3s"></div></div></div>
+      <div class="skill-tile" style="--c:#3178c6"><div class="skill-icon">📘</div><div class="skill-name">TypeScript</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%;animation-delay:0.4s"></div></div></div>
+      <div class="skill-tile" style="--c:#68a063"><div class="skill-icon">🟢</div><div class="skill-name">Node.js</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%;animation-delay:0.5s"></div></div></div>
+      <div class="skill-tile" style="--c:#3776ab"><div class="skill-icon">🐍</div><div class="skill-name">Python</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:82%;animation-delay:0.6s"></div></div></div>
+      <div class="skill-tile" style="--c:#7c6dfa"><div class="skill-icon">🤖</div><div class="skill-name">AI Tools & Agents</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:78%;animation-delay:0.7s"></div></div></div>
+      <div class="skill-tile" style="--c:#6dfacc"><div class="skill-icon">🔧</div><div class="skill-name">Backend Dev</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:72%;animation-delay:0.8s"></div></div></div>
+      <div class="skill-tile" style="--c:#fac86d"><div class="skill-icon">💻</div><div class="skill-name">Digital Record Keeping</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%;animation-delay:0.9s"></div></div></div>
+    </div>
+  </div>
+
+  <div id="tab-teaching" class="skills-panel">
+    <div class="skills-grid">
+      <div class="skill-tile" style="--c:#fa6d9a"><div class="skill-icon">📖</div><div class="skill-name">English Teaching</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:95%;animation-delay:0.1s"></div></div></div>
+      <div class="skill-tile" style="--c:#fac86d"><div class="skill-icon">➕</div><div class="skill-name">Mathematics</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:95%;animation-delay:0.2s"></div></div></div>
+      <div class="skill-tile" style="--c:#6dfacc"><div class="skill-icon">📝</div><div class="skill-name">Lesson Planning</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:92%;animation-delay:0.3s"></div></div></div>
+      <div class="skill-tile" style="--c:#7c6dfa"><div class="skill-icon">🏫</div><div class="skill-name">Classroom Management</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:95%;animation-delay:0.4s"></div></div></div>
+      <div class="skill-tile" style="--c:#6da8fa"><div class="skill-icon">📊</div><div class="skill-name">Assessment & Exams</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%;animation-delay:0.5s"></div></div></div>
+      <div class="skill-tile" style="--c:#fa9d6d"><div class="skill-icon">👪</div><div class="skill-name">Parent Communication</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:88%;animation-delay:0.6s"></div></div></div>
+      <div class="skill-tile" style="--c:#c86dfa"><div class="skill-icon">💡</div><div class="skill-name">Student Counselling</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%;animation-delay:0.7s"></div></div></div>
+      <div class="skill-tile" style="--c:#fa6d6d"><div class="skill-icon">🖥️</div><div class="skill-name">IT Teaching</div><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%;animation-delay:0.8s"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-tag">Work</div>
+  <div class="section-header"><h2>Projects & Apps</h2></div>
+  <div class="projects-grid">
+
+    <div class="proj-card" style="--proj-col:#7c6dfa;--proj-bg:#1a153a">
+      <div class="proj-card-top">🤖</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">AI Native Book</div>
+        <div class="proj-card-desc">AI-powered book application leveraging modern language models to deliver intelligent reading experiences.</div>
+        <div class="proj-tags"><span class="proj-tag">Python</span><span class="proj-tag">AI</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#fa6d9a;--proj-bg:#3a152a">
+      <div class="proj-card-top">💬</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">AI Chatbot</div>
+        <div class="proj-card-desc">Conversational AI agent with natural language processing for intelligent user interaction.</div>
+        <div class="proj-tags"><span class="proj-tag">Python</span><span class="proj-tag">NLP</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#6dfacc;--proj-bg:#0d2e24">
+      <div class="proj-card-top">🏥</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Health Wellness Agent</div>
+        <div class="proj-card-desc">AI agent providing health and wellness guidance through intelligent conversation and recommendations.</div>
+        <div class="proj-tags"><span class="proj-tag">AI Agents</span><span class="proj-tag">Python</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#fac86d;--proj-bg:#2e2210">
+      <div class="proj-card-top">🔐</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Secure Multi-User System</div>
+        <div class="proj-card-desc">Role-based authentication with secure multi-user management and access control.</div>
+        <div class="proj-tags"><span class="proj-tag">TypeScript</span><span class="proj-tag">Node.js</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#6da8fa;--proj-bg:#0d1a3a">
+      <div class="proj-card-top">📦</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Inventory Management System</div>
+        <div class="proj-card-desc">Full-stack inventory tracking with real-time updates and complete data management.</div>
+        <div class="proj-tags"><span class="proj-tag">JavaScript</span><span class="proj-tag">Node.js</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#fa9d6d;--proj-bg:#2e1a10">
+      <div class="proj-card-top">🎓</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Student Management System</div>
+        <div class="proj-card-desc">Comprehensive student record system built on OOP principles with full CRUD operations.</div>
+        <div class="proj-tags"><span class="proj-tag">TypeScript</span><span class="proj-tag">OOP</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#c86dfa;--proj-bg:#2a1040">
+      <div class="proj-card-top">⏰</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Alarm Clock</div>
+        <div class="proj-card-desc">Feature-rich alarm app with custom alerts, snooze, and a clean user interface.</div>
+        <div class="proj-tags"><span class="proj-tag">JavaScript</span><span class="proj-tag">HTML/CSS</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#6dfa7c;--proj-bg:#0d2e15">
+      <div class="proj-card-top">💱</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Currency Converter</div>
+        <div class="proj-card-desc">Real-time currency conversion with live exchange rates and intuitive interface.</div>
+        <div class="proj-tags"><span class="proj-tag">JavaScript</span><span class="proj-tag">API</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#fa6d6d;--proj-bg:#2e0d0d">
+      <div class="proj-card-top">⚖️</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">BMI Calculator</div>
+        <div class="proj-card-desc">Health-focused BMI calculator with visual results and health recommendations.</div>
+        <div class="proj-tags"><span class="proj-tag">JavaScript</span><span class="proj-tag">HTML/CSS</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#fac86d;--proj-bg:#2e2210">
+      <div class="proj-card-top">📐</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Advanced Unit Converter</div>
+        <div class="proj-card-desc">Multi-category unit conversion tool covering length, weight, temperature, and more.</div>
+        <div class="proj-tags"><span class="proj-tag">TypeScript</span><span class="proj-tag">Math</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#6dfacc;--proj-bg:#0d2e24">
+      <div class="proj-card-top">🌍</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">Country Info Card</div>
+        <div class="proj-card-desc">Interactive country explorer fetching live data from public APIs with beautiful card UI.</div>
+        <div class="proj-tags"><span class="proj-tag">JavaScript</span><span class="proj-tag">REST API</span></div>
+      </div>
+    </div>
+
+    <div class="proj-card" style="--proj-col:#7c6dfa;--proj-bg:#1a153a">
+      <div class="proj-card-top">🛒</div>
+      <div class="proj-card-body">
+        <div class="proj-card-title">E-commerce Website</div>
+        <div class="proj-card-desc">Full online store with product listings, cart functionality, and fully responsive design.</div>
+        <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">JS</span></div>
+      </div>
+    </div>
+
+  </div>
+  <div style="text-align:center;margin-top:2.5rem">
+    <a href="https://github.com/fajshah" target="_blank" class="btn btn-outline">View All 100+ Repos on GitHub →</a>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-tag">Journey</div>
+  <div class="section-header"><h2>Experience & Education</h2></div>
+  <div class="timeline">
+
+    <div class="timeline-item" style="--dot-c:#7c6dfa">
+      <div class="tl-date">2024 — Present</div>
+      <div class="tl-title">AI Developer (Training)</div>
+      <div class="tl-place">Governor House · Anthropic Claude AI Program, Karachi</div>
+      <div class="tl-desc">Attending advanced AI and development classes at Governor House, covering modern web technologies and artificial intelligence.</div>
+      <ul class="tl-bullets">
+        <li>Learned HTML, CSS, JavaScript, TypeScript, Node.js, Python</li>
+        <li>Built AI agents, chatbots, and full-stack web applications</li>
+        <li>Taught IT to students during the Governor House Summer Camp</li>
+        <li>Maintaining 100+ project repositories on GitHub</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item" style="--dot-c:#fa6d9a">
+      <div class="tl-date">Teaching Experience</div>
+      <div class="tl-title">English & Mathematics Teacher</div>
+      <div class="tl-place">Dadi Secondary School, Karachi</div>
+      <ul class="tl-bullets">
+        <li>Taught English and Mathematics to secondary classes</li>
+        <li>Prepared lesson plans, assignments, tests, and tracked progress</li>
+        <li>Worked on grammar, comprehension, writing, and problem-solving</li>
+        <li>Guided students individually and communicated with parents</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item" style="--dot-c:#6dfacc">
+      <div class="tl-date">Teaching Experience</div>
+      <div class="tl-title">Mathematics Teacher (Secondary)</div>
+      <div class="tl-place">RIG School, Karachi</div>
+      <ul class="tl-bullets">
+        <li>Focused on clear concepts and exam preparation</li>
+        <li>Used practice sheets, regular tests, and revision plans</li>
+        <li>Supported weaker students through extra help and follow-up</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item" style="--dot-c:#fac86d">
+      <div class="tl-date">10 Years Total</div>
+      <div class="tl-title">English Teacher & Assistant Incharge</div>
+      <div class="tl-place">Metropolitan Academy School, Karachi</div>
+      <ul class="tl-bullets">
+        <li>Taught English, managed class records and parent communication</li>
+        <li>Supported school administration in daily operations and discipline</li>
+        <li>Coordinated between staff and students as Assistant Incharge</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item" style="--dot-c:#c86dfa">
+      <div class="tl-date">Academic</div>
+      <div class="tl-title">Bachelor's Degree in Economics</div>
+      <div class="tl-place">Karachi, Pakistan</div>
+      <div class="tl-desc">Strong foundation in analytical thinking and quantitative reasoning — directly informing a data-driven approach to AI and software development.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STRENGTHS -->
+<section id="strengths">
+  <div class="section-tag">About Me</div>
+  <div class="section-header"><h2>Strengths & Languages</h2></div>
+  <div class="strengths-grid">
+    <div class="strength-card">
+      <div class="strength-icon">⚡</div>
+      <div class="strength-title">Quick Learner</div>
+      <div class="strength-desc">Continuously updating skills — from chalkboard to AI agents, always adapting to what's next.</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-icon">🌱</div>
+      <div class="strength-title">Patient & Motivating</div>
+      <div class="strength-desc">A decade of teaching built deep patience and the ability to motivate learners at every level.</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-icon">🤝</div>
+      <div class="strength-title">Team Player</div>
+      <div class="strength-desc">Responsible, punctual, and collaborative — whether in a classroom or a development team.</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-icon">🎯</div>
+      <div class="strength-title">Approachable</div>
+      <div class="strength-desc">Open communication style that bridges the gap between technical and non-technical people.</div>
+    </div>
+  </div>
+  <div style="margin-top:2.5rem">
+    <div class="section-tag" style="margin-bottom:1rem">Languages</div>
+    <div class="lang-row">
+      <div class="lang-badge">🇬🇧 English</div>
+      <div class="lang-badge">🇵🇰 Urdu</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-text">
+    <div class="section-tag">Get in touch</div>
+    <h2>Let's build something great<span style="color:var(--accent)">.</span></h2>
+    <p>Open to teaching roles, AI development projects, freelance work, and full-time opportunities. Based in Karachi — available remotely worldwide. References available on request.</p>
+  </div>
+  <div>
+    <div class="contact-links">
+      <a href="mailto:fajjibarbie@gmail.com" class="contact-link">
+        <div class="cl-icon" style="background:rgba(124,109,250,0.15)">✉️</div>
+        <div><div class="cl-label">Email</div><div class="cl-value">fajjibarbie@gmail.com</div></div>
+      </a>
+      <a href="tel:03323569140" class="contact-link">
+        <div class="cl-icon" style="background:rgba(109,250,204,0.15)">📞</div>
+        <div><div class="cl-label">Phone</div><div class="cl-value">0332-3569140</div></div>
+      </a>
+      <a href="https://github.com/fajshah" target="_blank" class="contact-link">
+        <div class="cl-icon" style="background:rgba(250,200,109,0.15)">💻</div>
+        <div><div class="cl-label">GitHub</div><div class="cl-value">github.com/fajshah</div></div>
+      </a>
+      <a href="https://linkedin.com/in/syeda-farzana-shah-0128662ba" target="_blank" class="contact-link">
+        <div class="cl-icon" style="background:rgba(109,168,250,0.15)">🔗</div>
+        <div><div class="cl-label">LinkedIn</div><div class="cl-value">Syeda Farzana Shah</div></div>
+      </a>
+      <div class="contact-link" style="cursor:default">
+        <div class="cl-icon" style="background:rgba(250,109,154,0.15)">📍</div>
+        <div><div class="cl-label">Location</div><div class="cl-value">Karachi, Pakistan</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span style="color:var(--accent)">FAJ.DEV</span> &nbsp;·&nbsp; Syeda Farzana Shah &nbsp;·&nbsp; Teacher · AI Developer · Karachi, Pakistan
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 80);
+  });
+  document.querySelectorAll('a,button,.proj-cube').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(2)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  // Tabs
+  function showTab(name) {
+    document.querySelectorAll('.skills-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+    // restart bar animations
+    document.querySelectorAll('#tab-' + name + ' .skill-bar').forEach(b => {
+      b.style.animationPlayState = 'running';
+    });
+  }
+
+  // Skill bars observer
+  const bars = document.querySelectorAll('.skill-bar');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.style.animationPlayState = 'running'; });
+  }, {threshold:0.3});
+  bars.forEach(b => { b.style.animationPlayState = 'paused'; obs.observe(b); });
+
+  // Pause hero iso on hover
+  const world = document.querySelector('.iso-world');
+  document.querySelector('.hero-iso').addEventListener('mouseenter', () => world.style.animationPlayState = 'paused');
+  document.querySelector('.hero-iso').addEventListener('mouseleave', () => world.style.animationPlayState = 'running');
+</script>
+</body>
+</html>
